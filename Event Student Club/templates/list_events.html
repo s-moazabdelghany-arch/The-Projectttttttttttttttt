@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head><meta charset='utf-8'><title>Events</title>
+  <link rel='stylesheet' href='/static/style.css'></head>
+  <body>
+    <h1>Events</h1>
+    <form method='get' action='/events'>
+      <input type='text' name='q' placeholder='Search'>
+      <button type='submit'>Search</button>
+    </form>
+    <ul>
+    {% for e in events %}
+      <li><a href='/events/{{ e.id }}'>{{ e.title }}</a> - {{ e.date_time }} - {{ e.location }}</li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>

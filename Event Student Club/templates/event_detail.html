@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head><meta charset='utf-8'><title>{{ event.title }}</title>
+  <link rel='stylesheet' href='/static/style.css'></head>
+  <body>
+    <a href='/events'>Back to Events</a>
+    <h1>{{ event.title }}</h1>
+    <p>{{ event.description }}</p>
+    <p><strong>Date:</strong> {{ event.date_time }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Capacity:</strong> {{ event.capacity }}</p>
+    <h3>Registered Students ({{ registrations|length }})</h3>
+    <ul>
+      {% for r in registrations %}
+        <li>Student ID: {{ r.student_id }}</li>
+      {% endfor %}
+    </ul>
+    <h3>Register (enter Student ID)</h3>
+    <form method='post' action='/events/{{ event.id }}/register'>
+      <input type='text' name='student_id' placeholder='Student ID'>
+      <button type='submit'>Register</button>
+    </form>
+  </body>
+</html>
