@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ event.title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <h2>Student Club Events</h2>
+    <div>
+        <a href="/events">Events</a>
+
+        {% if session.get('role') == 'admin' %}
+            <a href="/students">Students</a>
+        {% else %}
+            <a href="/students/{{ session.get('user_id') }}">Profile</a>
+        {% endif %}
+
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+
+<!-- Event Card -->
+<div class="card" style="max-width:700px; margin:auto;">
+
+    <h1>{{ event.title }}</h1>
+
+    <p><strong>Description:</strong> {{ event.description }}</p>
+    <p><strong>Date & Time:</strong> {{ event.date_time }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Capacity:</strong> {{ event.capacity }}</p>
+    <p><strong>Registered Students:</strong> {{ registered_count }}</p>
+
+    <hr>
+
+    {% if session.get('user_id') %}
+
+        {% set registered_ids = registrations | map(attribute='student_id') | list %}
+
+        {% if session.get('user_id') in registered_ids %}
+            <!-- Unregister Button -->
+            <form method="post" action="/events/{{ event.id }}/unregister">
+                <button class="btn btn-danger">Unregister from Event</button>
+            </form>
+        {% else %}
+            <!-- Register Button -->
+            <form method="post" action="/events/{{ event.id }}/register">
+                <button class="btn">Register for Event</button>
+            </form>
+        {% endif %}
+
+    {% else %}
+        <div class="message">
+            Please <a href="/login">login</a> to register for this event.
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

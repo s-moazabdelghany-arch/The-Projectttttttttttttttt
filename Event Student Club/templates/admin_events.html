@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Events</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <h2>Student Club Events</h2>
+    <div>
+        <a href="/events">Events</a>
+
+        {% if session.get('role') == 'admin' %}
+            <a href="/students">Students</a>
+        {% else %}
+            <a href="/students/{{ session.get('user_id') }}">Profile</a>
+        {% endif %}
+
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<h1>Manage Events</h1>
+
+<a class="btn" href="/admin/events/add">➕ Add New Event</a>
+
+<br><br>
+
+<div class="cards">
+    {% for e in events %}
+    <div class="card">
+        <h3>{{ e.title }}</h3>
+        <p>{{ e.description }}</p>
+        <p><strong>Date:</strong> {{ e.date_time }}</p>
+        <p><strong>Location:</strong> {{ e.location }}</p>
+        <p><strong>Capacity:</strong> {{ e.capacity }}</p>
+
+        <div class="admin-actions">
+            <a class="btn btn-danger" href="/admin/events/delete/{{ e.id }}">🗑 Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<br>
+
+<a class="btn" href="/admin/export/registrations">⬇ Export Registrations CSV</a>
+
+</body>
+</html>

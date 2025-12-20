@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Events</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <h2>Student Club Events</h2>
+    <div>
+        <a href="/events">Events</a>
+
+        {% if session.get('role') == 'admin' %}
+            <a href="/students">Students</a>
+        {% else %}
+            <a href="/students/{{ session.get('user_id') }}">Profile</a>
+        {% endif %}
+
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+
+<h1>Upcoming Events</h1>
+
+<form method="get">
+    <input type="text" name="q" placeholder="Search events...">
+</form>
+
+<div class="cards">
+    {% for e in events %}
+    <div class="card">
+        <h3>{{ e.title }}</h3>
+        <p>{{ e.description }}</p>
+        <p><strong>Date:</strong> {{ e.date_time }}</p>
+        <p><strong>Location:</strong> {{ e.location }}</p>
+        <a class="btn" href="/events/{{ e.id }}">View Details</a>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
