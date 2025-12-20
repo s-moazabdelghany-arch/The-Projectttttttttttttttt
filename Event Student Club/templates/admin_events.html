@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Events</title>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Events</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -21,12 +22,11 @@
     </div>
 </div>
 
+<h1>Manage Events</h1>
 
-<h1>Upcoming Events</h1>
+<a class="btn" href="/admin/events/add">➕ Add New Event</a>
 
-<form method="get">
-    <input type="text" name="q" placeholder="Search events...">
-</form>
+<br><br>
 
 <div class="cards">
     {% for e in events %}
@@ -35,10 +35,18 @@
         <p>{{ e.description }}</p>
         <p><strong>Date:</strong> {{ e.date_time }}</p>
         <p><strong>Location:</strong> {{ e.location }}</p>
-        <a class="btn" href="/events/{{ e.id }}">View Details</a>
+        <p><strong>Capacity:</strong> {{ e.capacity }}</p>
+
+        <div class="admin-actions">
+            <a class="btn btn-danger" href="/admin/events/delete/{{ e.id }}">🗑 Delete</a>
+        </div>
     </div>
     {% endfor %}
 </div>
+
+<br>
+
+<a class="btn" href="/admin/export/registrations">⬇ Export Registrations CSV</a>
 
 </body>
 </html>

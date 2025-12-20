@@ -1,22 +1,24 @@
 import csv
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, 'data')
-
 class FileManager:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(FileManager, cls).__new__(cls)
+        return cls._instance
+
     def read_csv(self, filename):
-        path = os.path.join(DATA_DIR, filename)
-        if not os.path.exists(path):
+        if not os.path.exists(filename):
             return []
-        with open(path, newline='', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            return [row for row in reader]
+
+        with open(filename, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            return list(reader)
 
     def write_csv(self, filename, fieldnames, rows):
-        path = os.path.join(DATA_DIR, filename)
-        with open(path, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
+        with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
-            for r in rows:
-                writer.writerow(r)
+            writer.writerows(rows)

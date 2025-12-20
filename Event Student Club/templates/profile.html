@@ -1,16 +1,40 @@
-<!doctype html>
-<html>
-  <head><meta charset='utf-8'><title>{{ student.name }}</title>
-  <link rel='stylesheet' href='/static/style.css'></head>
-  <body>
-    <a href='/students'>Back to Students</a>
-    <h1>{{ student.name }}</h1>
-    <p>Email: {{ student.email }}</p>
-    <h3>My Events</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <h2>Student Club Events</h2>
+    <div>
+        <a href="/events">Events</a>
+
+        {% if session.get('role') == 'admin' %}
+            <a href="/students">Students</a>
+        {% else %}
+            <a href="/students/{{ session.get('user_id') }}">Profile</a>
+        {% endif %}
+
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="card" style="max-width:700px;margin:auto;">
+    <h2>{{ student.name }}</h2>
+    <p><strong>Email:</strong> {{ student.email }}</p>
+
+    <h3>My Registered Events</h3>
     <ul>
-    {% for e in events %}
-      <li>{{ e.title }} - {{ e.date_time }}</li>
-    {% endfor %}
+        {% for e in events %}
+            <li>{{ e.title }} - {{ e.date_time }}</li>
+        {% else %}
+            <li>No registered events yet</li>
+        {% endfor %}
     </ul>
-  </body>
+</div>
+
+</body>
 </html>

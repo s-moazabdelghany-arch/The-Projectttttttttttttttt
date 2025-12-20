@@ -1,22 +1,52 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect
 from repositories.student_repository import StudentRepository
 from repositories.registration_repository import RegistrationRepository
 from repositories.event_repository import EventRepository
 
-student_bp = Blueprint('student', __name__, url_prefix='/students')
+# Blueprint
+student_bp = Blueprint('student_bp', __name__)
 
+# Repositories
 student_repo = StudentRepository()
-reg_repo = RegistrationRepository()
+registration_repo = RegistrationRepository()
 event_repo = EventRepository()
 
-@student_bp.route('/')
+
+# ===============================
+# ADMIN: View All Students
+# ===============================
+@student_bp.route('/students', strict_slashes=False)
 def list_students():
+    # Only admin can view all students
+    if session.get('role') != 'admin':
+        return redirect('/events')
+
     students = student_repo.get_all()
     return render_template('students_list.html', students=students)
 
-@student_bp.route('/<int:student_id>')
-def profile(student_id):
-    s = student_repo.get_by_id(student_id)
-    regs = reg_repo.get_by_student(student_id)
-    events = [event_repo.get_by_id(r.event_id) for r in regs]
-    return render_template('profile.html', student=s, events=events)
+
+# ===============================
+# STUDENT / ADMIN: View Profile
+# ===============================
+@student_bp.route('/students/<int:student_id>', strict_slashes=False)
+def student_profile(student_id):
+
+    # Student can view only his profile
+    if session.get('role') != 'admin' and session.get('user_id') != student_id:
+        return redirect('/events')
+
+    student = student_repo.get_by_id(student_id)
+
+    registrations = registration_repo.get_by_student(student_id)
+
+    events = []
+    for reg in registrations:
+        event = event_repo.get_by_id(reg.event_id)
+        if event:
+            events.append(event)
+
+    return render_template(
+        'profile.html',
+        student=student,
+        events=events
+    )

@@ -1,33 +1,50 @@
-from models.registration import Registration
+import csv
 from utils.file_manager import FileManager
 
 class RegistrationRepository:
-    def __init__(self):
-        self.fm = FileManager()
+    def __init__(self, test_mode=False):
+        self.file = "test_data/registrations.csv" if test_mode else "data/registrations.csv"
+        self.file_manager = FileManager()
 
     def get_all(self):
-        rows = self.fm.read_csv('registrations.csv')
-        return [Registration(r['id'], r['student_id'], r['event_id'], r.get('reg_date','')) for r in rows]
+        return self.file_manager.read_csv(self.file)
 
     def get_by_student(self, student_id):
-        rows = self.fm.read_csv('registrations.csv')
-        return [Registration(r['id'], r['student_id'], r['event_id'], r.get('reg_date','')) for r in rows if int(r['student_id'])==int(student_id)]
-
-    def get_by_event(self, event_id):
-        rows = self.fm.read_csv('registrations.csv')
-        return [Registration(r['id'], r['student_id'], r['event_id'], r.get('reg_date','')) for r in rows if int(r['event_id'])==int(event_id)]
+        rows = self.get_all()
+        return [r for r in rows if int(r['student_id']) == student_id]
 
     def exists(self, student_id, event_id):
-        rows = self.fm.read_csv('registrations.csv')
-        for r in rows:
-            if int(r['student_id'])==int(student_id) and int(r['event_id'])==int(event_id):
-                return True
-        return False
+        rows = self.get_all()
+        return any(
+            int(r['student_id']) == student_id and int(r['event_id']) == event_id
+            for r in rows
+        )
 
     def add(self, student_id, event_id):
-        rows = self.fm.read_csv('registrations.csv')
-        next_id = 1
-        if rows:
-            next_id = max(int(r['id']) for r in rows)+1
-        rows.append({'id':str(next_id),'student_id':str(student_id),'event_id':str(event_id),'reg_date':''})
-        self.fm.write_csv('registrations.csv', ['id','student_id','event_id','reg_date'], rows)
+        if self.exists(student_id, event_id):
+            return
+
+        rows = self.get_all()
+        rows.append({
+            'student_id': student_id,
+            'event_id': event_id
+        })
+
+        self.file_manager.write_csv(
+            self.file,
+            ['student_id', 'event_id'],
+            rows
+        )
+
+    def remove(self, student_id, event_id):
+        rows = self.get_all()
+        rows = [
+            r for r in rows
+            if not (int(r['student_id']) == student_id and int(r['event_id']) == event_id)
+        ]
+
+        self.file_manager.write_csv(
+            self.file,
+            ['student_id', 'event_id'],
+            rows
+        )
